@@ -61,7 +61,7 @@ function navigate() {
 }
 
 .button-transparent-solid {
-    @apply p-0
+    @apply p-0 text-slate-900
 }
 </style>
 
