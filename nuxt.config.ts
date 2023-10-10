@@ -12,4 +12,12 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  app: {
+    baseURL: '/nuxt-github-pages/',
+    buildAssetsDir: 'assets',
+    head: {
+      link:  [{ rel: 'shortcut icon', type: 'image/x-icon', href: '@/assets/favicon.ico' }],
+      title: 'A Formula 1 interactive dashboard'
+    }
+  }
 })

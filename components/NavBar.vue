@@ -10,8 +10,10 @@ import { NuxtLink } from '#ui-colors/components';
                     FastTrack Analytics
                 </NuxtLink>
                 <div class="flex gap-2">
-                    <Button color="secondary" variant="bordered" link="http://ergast.com/mrd/" is-external-link icon="book-open"><span class="hidden md:block">API Docs</span></Button>
-                    <Button color="primary" link="http://ergast.com/mrd/" is-external-link   icon="code"><span class="hidden md:block">Code </span></Button>
+            <Button color="transparent" :icon="{prefix: 'fab', iconName: 'github'}"></Button>
+
+                    <Button color="secondary" variant="bordered" link="http://ergast.com/mrd/" is-external-link :icon="{prefix: 'fas', iconName: 'book-open'}"><span class="hidden md:block">API Docs</span></Button>
+                    <Button color="primary" link="https://github.com/multiparedes/fasttrack-analytics" is-external-link :icon="{prefix: 'fas', iconName: 'code'}"><span class="hidden md:block">Code </span></Button>
                 </div>
             </nav>
         </div>
