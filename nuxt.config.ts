@@ -13,7 +13,7 @@ export default defineNuxtConfig({
     },
   },
   app: {
-    baseURL: '/nuxt-github-pages/',
+    baseURL: '/fasttrack-analytics/',
     buildAssetsDir: 'assets',
     head: {
       link:  [{ rel: 'shortcut icon', type: 'image/x-icon', href: '@/assets/favicon.ico' }],
