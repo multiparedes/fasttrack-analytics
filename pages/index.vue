@@ -33,11 +33,11 @@
             </select>
         </Card>
 
-        <Card title="Nacionalidad de todos los pilotos 🌍">
-            <div id="container-pie-drivers"></div>
+        <Card title="Nacionalidad de todos los pilotos 🌍" class="col-span-2 md:col-span-1">
+            <DriversNationality />
         </Card>
 
-        <Card title="Carreras ganadas por pilotos 🏆">
+        <Card title="Carreras ganadas por pilotos 🏆" class="col-span-2 md:col-span-1">
             <div id="container-bars-wins"></div>
         </Card>
 
@@ -46,3 +46,9 @@
         </Card>
     </section>    
 </template>
+
+<script setup>
+
+import DriversNationality from '~/components/charts/DriversNationality.vue';
+
+</script>

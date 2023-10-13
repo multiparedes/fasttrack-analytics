@@ -3,7 +3,6 @@ export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: true },
   components: ['@/components/'],  
-  modules: ['@nuxtjs/color-mode'],
   css: ['@/main.css'],
   plugins: ['@/plugins/fontawesome.js'],
   postcss: {
@@ -16,8 +15,8 @@ export default defineNuxtConfig({
     baseURL: '/fasttrack-analytics/',
     buildAssetsDir: 'assets',
     head: {
-      link:  [{ rel: 'shortcut icon', type: 'image/x-icon', href: '@/assets/favicon.ico' }],
+      link:  [{ rel: 'shortcut icon', type: 'image/x-icon', href: '@/assets/favicon.svg' }],
       title: 'A Formula 1 interactive dashboard'
     }
-  }
+  },
 })
