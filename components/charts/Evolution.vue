@@ -13,6 +13,10 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 const rawData = ref(null);
 const hasLegend = ref(true)
 
+const props = defineProps({
+  season: {type: String, required: true, default: 'current'}
+});
+
 const chartData = computed(() => {
   const drivers = rawData.value?.drivers;
   const races = rawData.value?.dates;
@@ -30,11 +34,11 @@ const chartData = computed(() => {
     const scores = driver.data || [];
     return {
       label: driver.name,
-      data: scores,
+      data: scores.map((score) => score.total),
       backgroundColor: colors[index],
       borderColor: colors[index],
       fill: false,
-      pointStyle: 'hidden', 
+      pointStyle: 'hidden',
     };
   });
   const dates = rawData.value.dates || [];
@@ -47,42 +51,57 @@ const chartData = computed(() => {
 
 const options = computed(() => {
   return {
-  responsive: true,
-  aspectRatio: hasLegend.value ? 2 : 0.5,
-  plugins: {
-    legend: {
-      position: 'bottom',
-      display: hasLegend.value,
-    },
-    tooltip: {
-        callbacks: {
-          title:  function (context) {
-                console.log(context)
-                return `${rawData.value.dates[context[0].dataIndex].race} (${context[0].label})`
-        },
-      }
-    },
-  },
-  onResize: (_, newView) => {
-        if (newView.width < 700) {
-          hasLegend.value = false
-          return false;
-        }
-        hasLegend.value = true
-        return true;
+    responsive: true,
+    aspectRatio: hasLegend.value ? 2 : 0.5,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        display: hasLegend.value,
       },
-}});
-
-
+      tooltip: {
+        callbacks: {
+          title: function (context) {
+            return rawData.value.drivers[context[0].datasetIndex].name
+          },
+          afterTitle: function (context) {
+            return `At ${rawData.value.races[context[0].dataIndex]}`
+          },
+          label: function (context) {
+            return [`Acumulated points: ${context.raw}`, `This race points: ${rawData.value.drivers[context.datasetIndex].data[context.dataIndex].last}`]
+          },
+          footer: function (context) {
+            return `Date: ${context[0].label}`
+          }
+        }
+      },
+    },
+    onResize: (_, newView) => {
+      if (newView.width < 700) {
+        hasLegend.value = false
+        return false;
+      }
+      hasLegend.value = true
+      return true;
+    },
+  }
+});
 
 onMounted(async () => {
   const data = await fetchData();
   rawData.value = data;
 });
 
+watch(
+  () => props.season,
+  async () => {
+    const data = await fetchData();
+    rawData.value = data;
+  }
+);
+
 async function fetchData() {
   try {
-    const response = await fetch('https://ergast.com/api/f1/current/results.json?limit=1000');
+    const response = await fetch(`https://ergast.com/api/f1/${props.season}/results.json?limit=1000`);
     const data = await response.json();
 
     const drivers = {};
@@ -99,16 +118,18 @@ async function fetchData() {
         if (!drivers[driverName]) {
           drivers[driverName] = {
             name: driverName,
-            data: [],
+            total: 0, // Inicializa la suma acumulada en cero
+            data: [], // Inicializa el array vacío para almacenar las puntuaciones individuales
           };
         }
 
-        // Suma los puntos al valor acumulado anterior
-        const previousTotal = drivers[driverName].data.length > 0 ? drivers[driverName].data.slice(-1)[0] : 0;
-        const newTotal = previousTotal + points;
+        // Actualiza la suma acumulada
+        drivers[driverName].total += points;
 
-        drivers[driverName].data.push(newTotal);
+        // Agrega la puntuación individual al array
+        drivers[driverName].data.push({ total: drivers[driverName].total, last: points });
       });
+
     });
 
     const driverList = Object.values(drivers);

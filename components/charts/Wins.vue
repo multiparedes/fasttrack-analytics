@@ -12,6 +12,10 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const rawData = ref(null)
 
+const props = defineProps({
+  season: {type: String, required: true, default: 'current'}
+});
+
 const chartData = computed(() => {
     const data = rawData.value;
     let colors = [];
@@ -52,13 +56,21 @@ const options = {
 };
 
 onMounted(async () => {
-    const { winsData } = await fetchData();
-    rawData.value = winsData;
+    const data = await fetchData();
+    rawData.value = data;
 });
+
+watch(
+  () => props.season,
+  async () => {
+    const data = await fetchData();
+    rawData.value = data;
+  }
+);
 
 async function fetchData() {
     try {
-        const response = await fetch('https://ergast.com/api/f1/current/driverStandings.json?limit=1000');
+        const response = await fetch(`https://ergast.com/api/f1/${props.season}/driverStandings.json?limit=1000`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -71,7 +83,7 @@ async function fetchData() {
                 name: `${item.Driver.givenName} ${item.Driver.familyName}`,
                 wins: parseInt(item.wins),
             }));
-        return { winsData };
+        return winsData;
     } catch (error) {
         console.error('Error:', error);
         return { winsData: [] };

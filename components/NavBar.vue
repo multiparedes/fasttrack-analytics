@@ -1,7 +1,7 @@
 
 import { NuxtLink } from '#ui-colors/components';
 <template>
-    <header class="w-full bg-white dark:bg-slate-800">
+    <header class="w-full bg-white">
         <div class="flex p-4 justify-center shadow-xl">
             <nav class="flex gap-1 w-full max-w-screen-xl items-center h-6 justify-between py-4 px-4">
                 <NuxtLink

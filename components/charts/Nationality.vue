@@ -13,6 +13,10 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const rawData = ref(null);
 const hasLegend = ref(true)
 
+const props = defineProps({
+  season: {type: String, required: true, default: 'current'}
+});
+
 const chartData = computed(() => {
   const data = rawData.value;
   let colors = [];
@@ -62,17 +66,11 @@ const options = computed(() => {
       },
     },
     onResize: (_, newView) => {
-      console.log(newView)
-      console.log(hasLegend.value)
       if (newView.width < 350) {
         hasLegend.value = false
-      console.log(hasLegend.value)
-
         return false;
       }
       hasLegend.value = true
-      console.log(hasLegend.value)
-
       return true;
     },
   }
@@ -83,9 +81,17 @@ onMounted(async () => {
   rawData.value = data;
 });
 
+watch(
+  () => props.season,
+  async () => {
+    const data = await fetchData();
+    rawData.value = data;
+  }
+);
+
 async function fetchData() {
   try {
-    const response = await fetch('https://ergast.com/api/f1/current/drivers.json?limit=1000');
+    const response = await fetch(`https://ergast.com/api/f1/${props.season}/drivers.json?limit=1000`);
     const { MRData: { DriverTable: { Drivers } } } = await response.json();
 
     const nationalityCounts = Drivers.reduce((counts, driver) => {
