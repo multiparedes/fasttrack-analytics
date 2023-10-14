@@ -61,13 +61,10 @@ const options = computed(() => {
       tooltip: {
         callbacks: {
           title: function (context) {
-            return rawData.value.drivers[context[0].datasetIndex].name
-          },
-          afterTitle: function (context) {
-            return `At ${rawData.value.races[context[0].dataIndex]}`
+            return `${rawData.value.races[context[0].dataIndex]}`
           },
           label: function (context) {
-            return [`Acumulated points: ${context.raw}`, `This race points: ${rawData.value.drivers[context.datasetIndex].data[context.dataIndex].last}`]
+            return [rawData.value.drivers[context.datasetIndex].name, `Acumulated points: ${context.raw}`, `This race points: ${rawData.value.drivers[context.datasetIndex].data[context.dataIndex].last}`]
           },
           footer: function (context) {
             return `Date: ${context[0].label}`
