@@ -38,17 +38,19 @@
         </Card>
 
         <Card title="Carreras ganadas por pilotos 🏆" class="col-span-2 md:col-span-1">
-            <div id="container-bars-wins"></div>
+            <DriversWins />
         </Card>
 
         <Card class="col-span-2" title="Evolución de los pilotos 📈">
-            <div id="container-chart-evolution"></div>
+            <DriversEvolution />
         </Card>
     </section>    
 </template>
 
 <script setup>
 
-import DriversNationality from '~/components/charts/DriversNationality.vue';
+import DriversNationality from '~/components/charts/Nationality.vue';
+import DriversWins from '~/components/charts/Wins.vue'
+import DriversEvolution from '~/components/charts/Evolution.vue';
 
 </script>

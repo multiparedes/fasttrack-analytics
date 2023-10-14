@@ -1,15 +1,17 @@
 <template>
-  <Doughnut ref="canvas" :options="options" :data="chartData" />
+  <Doughnut :options="options" :data="chartData" />
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'vue-chartjs';
+import { generateDynamicColors } from '#imports';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const rawData = ref(null);
+const hasLegend = ref(true)
 
 const chartData = computed(() => {
   const data = rawData.value;
@@ -29,49 +31,57 @@ const chartData = computed(() => {
   };
 });
 
-const options = {
-  plugins: {
-    legend: {
-      responsive: true,
-      position: 'bottom',
-    },
-    tooltip: {
-      callbacks: {
-        footer: function (context) {
-              let footer = ""
+const options = computed(() => {
+  return {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: hasLegend.value,
+        position: 'bottom',
+      },
+      tooltip: {
+        callbacks: {
+          footer: function (context) {
+            let footer = ""
 
-              if (context[0].parsed !== null) {
-                const dataIndex = context[0].dataIndex;
-                footer = `${rawData.value[dataIndex].drivers.join(', ')}`;
-              }
-              
-              return footer;
-            },
-            labelColor: function (context) {
-              return {
-                borderColor: 'rgba(0, 0, 0, 0)',
-                backgroundColor: context.dataset.backgroundColor[context.dataIndex],
-                borderRadius: 6,
-              };
-            },
+            if (context[0].parsed !== null) {
+              const dataIndex = context[0].dataIndex;
+              footer = `${rawData.value[dataIndex].drivers.join(', ')}`;
+            }
+
+            return footer;
+          },
+          labelColor: function (context) {
+            return {
+              borderColor: 'rgba(0, 0, 0, 0)',
+              backgroundColor: context.dataset.backgroundColor[context.dataIndex],
+              borderRadius: 6,
+            };
+          },
+        },
       },
     },
-  },
-};
+    onResize: (_, newView) => {
+      console.log(newView)
+      console.log(hasLegend.value)
+      if (newView.width < 350) {
+        hasLegend.value = false
+      console.log(hasLegend.value)
+
+        return false;
+      }
+      hasLegend.value = true
+      console.log(hasLegend.value)
+
+      return true;
+    },
+  }
+});
 
 onMounted(async () => {
   const data = await fetchData();
   rawData.value = data;
 });
-
-function generateDynamicColors(numColors) {
-  const dynamicColors = [];
-  for (let i = 0; i < numColors; i++) {
-    const hue = (i * 40) % 360;
-    dynamicColors.push(`hsla(${hue}, 80%, 80%, 0.8)`);
-  }
-  return dynamicColors;
-}
 
 async function fetchData() {
   try {
