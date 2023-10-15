@@ -14,7 +14,7 @@ const rawData = ref(null);
 const hasLegend = ref(true)
 
 const props = defineProps({
-  season: {type: String, required: true, default: 'current'}
+  season: { type: String, required: true, default: 'current' }
 });
 
 const chartData = computed(() => {
@@ -53,6 +53,7 @@ const options = computed(() => {
   return {
     responsive: true,
     aspectRatio: hasLegend.value ? 2 : 0.5,
+    interaction: { intersect: false },
     plugins: {
       legend: {
         position: 'bottom',
@@ -115,9 +116,9 @@ async function fetchData() {
         if (!drivers[driverName]) {
           drivers[driverName] = {
             name: driverName,
-            total: 0, // Inicializa la suma acumulada en cero
-            data: [], // Inicializa el array vacío para almacenar las puntuaciones individuales
-          };
+            total: 0,
+            data: [],
+          }
         }
 
         // Actualiza la suma acumulada
