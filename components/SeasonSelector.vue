@@ -1,8 +1,9 @@
 <template>
     <div>
-        <label for="seasons" class="block mb-2 text-sm font-medium text-gray-900">Seleccionar temporada</label>
+        <label for="seasons" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">Seleccionar
+            temporada</label>
         <select v-if="seasonsList" id="seasons" v-model="selectedSeason"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2">
+            class="bg-gray-50 dark:bg-slate-600 border border-gray-300 dark:border-slate-800 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2">
             <option selected value="current">Actual</option>
             <option v-for="season in seasonsList" :key="season" :value="season">{{ season }}</option>
         </select>

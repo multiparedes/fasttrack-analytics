@@ -1,12 +1,11 @@
 <template>
-    <div class="bg-slate-300 flex flex-col relative" style="font-family: 'Barlow', sans-serif;">
+    <div class="bg-slate-300 dark:bg-slate-500 flex flex-col relative min-h-screen"
+        style="font-family: 'Barlow', sans-serif;">
         <NavBar />
-        <main class="min-h-screen ">
-            <div class="flex justify-center">
-                <slot></slot>
-            </div>
+        <main class="flex-grow flex items-center justify-center">
+            <slot></slot>
         </main>
         <Footer />
     </div>
-
 </template>
+  

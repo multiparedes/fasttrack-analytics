@@ -1,9 +1,6 @@
 <template>
     <button class="inline-flex items-center gap-2 px-4 py-2 transition-color duration-200 linear text-white rounded-full"
-        :class="`button-${color}-${variant} ${iconStart ? 'flex-row-reverse' : ''}`"
-        target="_blank"
-        @click="navigate"
-    >
+        :class="`button-${color}-${variant} ${iconStart ? 'flex-row-reverse' : ''}`" target="_blank" @click="navigate">
         <slot></slot>
         <font-awesome-icon v-if="icon" class=" aspect-square w-6" :icon="[icon?.prefix, icon?.iconName]" />
     </button>
@@ -14,15 +11,15 @@ const route = useRouter()
 
 const props = defineProps({
     color: {
-        type: String, 
-        required: true, 
-        default: 'primary', 
+        type: String,
+        required: true,
+        default: 'primary',
         validator: (color: string) => ['primary', 'secondary', 'transparent'].includes(color),
     },
     variant: {
         type: String,
-        required: false, 
-        default: 'solid',  
+        required: false,
+        default: 'solid',
         validator: (variant: string) => ['solid', 'bordered'].includes(variant),
     },
     size: { type: String, required: false, default: 'md' },
@@ -45,7 +42,7 @@ function navigate() {
 
 <style class="scss">
 .button-primary-solid {
-    @apply border-2 border-primary-600 bg-primary-600 hover:bg-primary-400 
+    @apply border-2 border-primary-600 bg-primary-600 hover:bg-primary-400
 }
 
 .button-primary-bordered {
@@ -53,11 +50,11 @@ function navigate() {
 }
 
 .button-secondary-solid {
-    @apply border-2 border-secondary-600 bg-secondary-600 hover:bg-secondary-400 
+    @apply border-2 border-secondary-600 bg-secondary-600 hover:bg-secondary-400
 }
 
 .button-secondary-bordered {
-    @apply border-2 border-secondary-600 text-secondary-600 hover:bg-secondary-400 hover:text-white 
+    @apply border-2 border-secondary-600 text-secondary-600 hover:bg-secondary-400 hover:text-white
 }
 
 .button-transparent-solid {

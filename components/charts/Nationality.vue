@@ -14,7 +14,7 @@ const rawData = ref(null);
 const hasLegend = ref(true)
 
 const props = defineProps({
-  season: {type: String, required: true, default: 'current'}
+  season: { type: String, required: true, default: 'current' }
 });
 
 const chartData = computed(() => {
