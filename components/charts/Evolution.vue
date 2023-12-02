@@ -14,12 +14,13 @@ const rawData = ref(null);
 const hasLegend = ref(true)
 
 const props = defineProps({
-  season: { type: String, required: true, default: 'current' }
+  season: { type: String, required: true, default: 'current' },
+  data: { type: Object, required: true }
 });
 
 const chartData = computed(() => {
-  const drivers = rawData.value?.drivers;
-  const races = rawData.value?.dates;
+  const drivers = props.data.value?.drivers;
+  const races = props.data.value?.dates;
 
   if (!drivers || !races) {
     return {
@@ -41,10 +42,10 @@ const chartData = computed(() => {
       pointStyle: 'hidden',
     };
   });
-  const dates = rawData.value.dates || [];
+  const dates = props.data.value.dates || [];
 
   return {
-    labels: dates.map((item) => item.date), // Utiliza las fechas como etiquetas en el eje X
+    labels: dates.map((item) => item.date),
     datasets: datasets,
   };
 });
@@ -62,10 +63,10 @@ const options = computed(() => {
       tooltip: {
         callbacks: {
           title: function (context) {
-            return `${rawData.value.races[context[0].dataIndex]}`
+            return `${props.data.value.races[context[0].dataIndex]}`
           },
           label: function (context) {
-            return [rawData.value.drivers[context.datasetIndex].name, `Acumulated points: ${context.raw}`, `This race points: ${rawData.value.drivers[context.datasetIndex].data[context.dataIndex].last}`]
+            return [props.data.value.drivers[context.datasetIndex].name, `Acumulated points: ${context.raw}`, `This race points: ${props.data.value.drivers[context.datasetIndex].data[context.dataIndex].last}`]
           },
           footer: function (context) {
             return `Date: ${context[0].label}`
@@ -83,59 +84,4 @@ const options = computed(() => {
     },
   }
 });
-
-onMounted(async () => {
-  const data = await fetchData();
-  rawData.value = data;
-});
-
-watch(
-  () => props.season,
-  async () => {
-    const data = await fetchData();
-    rawData.value = data;
-  }
-);
-
-async function fetchData() {
-  try {
-    const response = await fetch(`https://ergast.com/api/f1/${props.season}/results.json?limit=1000`);
-    const data = await response.json();
-
-    const drivers = {};
-    const races = [];
-    const dates = []
-
-    data.MRData.RaceTable.Races.forEach((race) => {
-      races.push(race.Circuit.circuitName); // Agregar nombre de carrera a la lista de carreras
-      dates.push({ date: race.date, race: race.Circuit.circuitName }); // Agregar nombre de carrera a la lista de carreras
-      race.Results.forEach((result) => {
-        const driverName = result.Driver.givenName + ' ' + result.Driver.familyName;
-        const points = parseFloat(result.points); // Convierte los puntos en un número
-
-        if (!drivers[driverName]) {
-          drivers[driverName] = {
-            name: driverName,
-            total: 0,
-            data: [],
-          }
-        }
-
-        // Actualiza la suma acumulada
-        drivers[driverName].total += points;
-
-        // Agrega la puntuación individual al array
-        drivers[driverName].data.push({ total: drivers[driverName].total, last: points });
-      });
-
-    });
-
-    const driverList = Object.values(drivers);
-    return { drivers: driverList, races, dates: dates };
-
-  } catch (error) {
-    console.error('Error fetching Drivers Nationality: ' + error);
-  }
-}
-
 </script>
