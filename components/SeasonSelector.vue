@@ -15,7 +15,7 @@ import { ref, onMounted } from 'vue';
 const selectedSeason = ref('current')
 const seasonsList = ref(null)
 
-const emit = defineEmits(['season-changed'])
+const emit = defineEmits(['season-changed', 'seasons-loaded'])
 
 onMounted(async () => {
     seasonsList.value = await fetchData()
@@ -26,6 +26,8 @@ const fetchData = async () => {
     const data = await response.json();
     const seasons = data.MRData.SeasonTable.Seasons.map((season) => season.season)
     seasons.pop();
+
+    emit('seasons-loaded')
 
     return seasons.sort((a, b) => b - a)
 }

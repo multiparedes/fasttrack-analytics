@@ -1,9 +1,10 @@
 <template>
+  <PageLoader :totalQueries="2" :fetchedQueries="resolvedQueries" />
   <section class="grid gap-4 py-4 grid-cols-1 md:grid-cols-2 mx-4 w-full max-w-screen-xl">
     <Card title="Welcome to FastTracks Analytics 👋" class="col-span-2"> </Card>
 
     <Card class="col-span-2">
-      <SeasonSelector @season-changed="changeCurrentSeason" />
+      <SeasonSelector @season-changed="changeCurrentSeason" @seasons-loaded="resolvedQueries += 1" />
     </Card>
 
     <Card title="Nacionality of all drivers 🌍" class="col-span-2 md:col-span-1">
@@ -28,9 +29,11 @@ import _ from 'lodash'
 
 const activeSeason = ref("current");
 const data = ref({})
+const resolvedQueries = ref(0)
 
 function changeCurrentSeason(newSeason) {
   activeSeason.value = newSeason;
+  resolvedQueries.value = 0
 }
 
 const jsonRoutes = {
@@ -40,13 +43,16 @@ const jsonRoutes = {
 }
 
 watch(() => activeSeason.value, async () => {
-  await fetchData()
+    resolvedQueries.value += 1
+    await fetchData()
     formatData()
+    resolvedQueries.value += 1
 })
 
 onBeforeMount(async () => {
     await fetchData()
     formatData()
+    resolvedQueries.value += 1
 }) 
 
 async function fetchData() {
