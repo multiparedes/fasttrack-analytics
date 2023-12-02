@@ -10,15 +10,42 @@ import { generateDynamicColors } from '#imports';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const rawData = ref(null);
 const hasLegend = ref(true)
 
 const props = defineProps({
-  season: { type: String, required: true, default: 'current' }
+  data: { type: Object, required: true }
 });
 
+function formatData() {
+  if(props.data.drivers) {
+    const nationalityCounts = props.data.drivers.reduce((counts, driver) => {
+    const nationality = driver.info.nationality;
+
+    if (!counts[nationality]) {
+      counts[nationality] = {
+        count: 0,
+        drivers: [],
+      };
+    }
+
+    counts[nationality].count++;
+
+    counts[nationality].drivers.push(driver.name);
+
+    return counts;
+  }, {});
+
+  return Object.entries(nationalityCounts).map(([name, { count, drivers }]) => ({
+    name,
+    count,
+    drivers,
+  }));
+  }
+  return []
+}
+
 const chartData = computed(() => {
-  const data = rawData.value;
+  const data = formatData()
   let colors = [];
   if (data) {
     colors = generateDynamicColors(data.length);
@@ -27,7 +54,7 @@ const chartData = computed(() => {
     labels: data ? data.map((driver) => driver.name) : [],
     datasets: [
       {
-        label: 'Numero',
+        label: 'Total count',
         data: data ? data.map((driver) => driver.count) : [],
         backgroundColor: colors,
       },
@@ -50,7 +77,7 @@ const options = computed(() => {
 
             if (context[0].parsed !== null) {
               const dataIndex = context[0].dataIndex;
-              footer = `${rawData.value[dataIndex].drivers.join(', ')}`;
+              footer = `${formatData()[dataIndex].drivers.join(', ')}`;
             }
 
             return footer;
@@ -75,49 +102,4 @@ const options = computed(() => {
     },
   }
 });
-
-onMounted(async () => {
-  const data = await fetchData();
-  rawData.value = data;
-});
-
-watch(
-  () => props.season,
-  async () => {
-    const data = await fetchData();
-    rawData.value = data;
-  }
-);
-
-async function fetchData() {
-  try {
-    const response = await fetch(`https://ergast.com/api/f1/${props.season}/drivers.json?limit=1000`);
-    const { MRData: { DriverTable: { Drivers } } } = await response.json();
-
-    const nationalityCounts = Drivers.reduce((counts, driver) => {
-      const nationality = driver.nationality;
-
-      if (!counts[nationality]) {
-        counts[nationality] = {
-          count: 0,
-          drivers: [],
-        };
-      }
-
-      counts[nationality].count++;
-
-      counts[nationality].drivers.push(`${driver.givenName} ${driver.familyName}`);
-
-      return counts;
-    }, {});
-
-    return Object.entries(nationalityCounts).map(([name, { count, drivers }]) => ({
-      name,
-      count,
-      drivers,
-    }));
-  } catch (error) {
-    console.error('Error fetching Drivers Nationality: ' + error);
-  }
-}
 </script>

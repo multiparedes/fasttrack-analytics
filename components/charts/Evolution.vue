@@ -19,8 +19,8 @@ const props = defineProps({
 });
 
 const chartData = computed(() => {
-  const drivers = props.data.value?.drivers;
-  const races = props.data.value?.dates;
+  const drivers = props.data?.drivers;
+  const races = props.data?.dates;
 
   if (!drivers || !races) {
     return {
@@ -42,7 +42,7 @@ const chartData = computed(() => {
       pointStyle: 'hidden',
     };
   });
-  const dates = props.data.value.dates || [];
+  const dates = props.data.dates || [];
 
   return {
     labels: dates.map((item) => item.date),
@@ -63,10 +63,10 @@ const options = computed(() => {
       tooltip: {
         callbacks: {
           title: function (context) {
-            return `${props.data.value.races[context[0].dataIndex]}`
+            return `${props.data.races[context[0].dataIndex]}`
           },
           label: function (context) {
-            return [props.data.value.drivers[context.datasetIndex].name, `Acumulated points: ${context.raw}`, `This race points: ${props.data.value.drivers[context.datasetIndex].data[context.dataIndex].last}`]
+            return [props.data.drivers[context.datasetIndex].name, `Acumulated points: ${context.raw}`, `This race points: ${props.data.drivers[context.datasetIndex].data[context.dataIndex].last}`]
           },
           footer: function (context) {
             return `Date: ${context[0].label}`

@@ -6,15 +6,15 @@
       <SeasonSelector @season-changed="changeCurrentSeason" />
     </Card>
 
-    <Card title="Nacionalidad de todos los pilotos 🌍" class="col-span-2 md:col-span-1">
-      <DriversNationality :season="activeSeason" />
+    <Card title="Nacionality of all drivers 🌍" class="col-span-2 md:col-span-1">
+      <DriversNationality :season="activeSeason" :data="data" />
     </Card>
 
-    <Card title="Carreras ganadas por pilotos 🏆" class="col-span-2 md:col-span-1">
-      <DriversWins :season="activeSeason" />
+    <Card title="Number of races won by drivers 🏆" class="col-span-2 md:col-span-1">
+      <DriversWins :season="activeSeason" :data="data" />
     </Card>
 
-    <Card class="col-span-2" title="Evolución de los pilotos 📈">
+    <Card class="col-span-2" title="Driver's evolution 📈">
       <DriversEvolution :season="activeSeason" :data="data" />
     </Card>
   </section>
@@ -27,7 +27,7 @@ import DriversEvolution from "~/components/charts/Evolution.vue";
 import _ from 'lodash'
 
 const activeSeason = ref("current");
-const data = reactive({})
+const data = ref({})
 
 function changeCurrentSeason(newSeason) {
   activeSeason.value = newSeason;
@@ -39,10 +39,32 @@ const jsonRoutes = {
     results: 'Results',
 }
 
+watch(() => activeSeason.value, async () => {
+  await fetchData()
+    formatData()
+})
+
 onBeforeMount(async () => {
     await fetchData()
+    formatData()
+}) 
 
-    const drivers = {};
+async function fetchData() {
+    try {
+        const response = await fetch(`https://ergast.com/api/f1/${activeSeason.value}/results.json?limit=1000`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const rawData = await response.json();
+        data.value = rawData.MRData
+    } catch (error) {
+        console.error('Error:', error);
+        return { winsData: [] };
+    }
+}
+
+function formatData() {
+  const drivers = {};
     const races = [];
     const dates = []
 
@@ -72,20 +94,6 @@ onBeforeMount(async () => {
 
     const driverList = Object.values(drivers);
     data.value = { drivers: driverList, races, dates: dates }
-}) 
-
-async function fetchData() {
-    try {
-        const response = await fetch(`https://ergast.com/api/f1/${activeSeason.value}/results.json?limit=1000`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const rawData = await response.json();
-        data.value = rawData.MRData
-    } catch (error) {
-        console.error('Error:', error);
-        return { winsData: [] };
-    }
 }
 
 </script>

@@ -10,14 +10,27 @@ import { generateDynamicColors } from '#imports';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
-const rawData = ref(null)
-
 const props = defineProps({
-  season: {type: String, required: true, default: 'current'}
+  data: {type: Object, required: true }
 });
 
+function formatData() {
+    if(props.data.drivers) {
+        const winsData = props.data?.drivers
+        .filter((driver) => parseInt(driver.wins) > 0)
+        .sort((a, b) => b.total - a.total)
+        .map((item) => ({
+            name: item.name,
+            wins: parseInt(item.wins),
+        }))
+        return winsData;
+    }
+
+    return []
+}
+
 const chartData = computed(() => {
-    const data = rawData.value;
+    const data = formatData();
     let colors = [];
     if (data) {
         colors = generateDynamicColors(data.length);
@@ -26,7 +39,7 @@ const chartData = computed(() => {
         labels: data ? data.map((driver) => driver.name) : [],
         datasets: [
             {
-                label: 'Victórias',
+                label: 'Wins',
                 data: data ? data.map((driver) => driver.wins) : [],
                 backgroundColor: colors,
             },
@@ -54,41 +67,5 @@ const options = {
         },
     },
 };
-
-onMounted(async () => {
-    const data = await fetchData();
-    rawData.value = data;
-});
-
-watch(
-  () => props.season,
-  async () => {
-    const data = await fetchData();
-    rawData.value = data;
-  }
-);
-
-async function fetchData() {
-    try {
-        const response = await fetch(`https://ergast.com/api/f1/${props.season}/driverStandings.json?limit=1000`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        const standings = data.MRData.StandingsTable.StandingsLists[0].DriverStandings;
-
-        const winsData = standings
-            .filter((driver) => parseInt(driver.wins) > 0)
-            .map((item) => ({
-                name: `${item.Driver.givenName} ${item.Driver.familyName}`,
-                wins: parseInt(item.wins),
-            }));
-        return winsData;
-    } catch (error) {
-        console.error('Error:', error);
-        return { winsData: [] };
-    }
-}
-
 </script>
   
