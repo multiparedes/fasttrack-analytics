@@ -17,29 +17,29 @@ const props = defineProps({
 });
 
 function formatData() {
-  if(props.data.drivers) {
+  if (props.data.drivers) {
     const nationalityCounts = props.data.drivers.reduce((counts, driver) => {
-    const nationality = driver.info.nationality;
+      const nationality = driver.info.nationality;
 
-    if (!counts[nationality]) {
-      counts[nationality] = {
-        count: 0,
-        drivers: [],
-      };
-    }
+      if (!counts[nationality]) {
+        counts[nationality] = {
+          count: 0,
+          drivers: [],
+        };
+      }
 
-    counts[nationality].count++;
+      counts[nationality].count++;
 
-    counts[nationality].drivers.push(driver.name);
+      counts[nationality].drivers.push(driver.name);
 
-    return counts;
-  }, {});
+      return counts;
+    }, {});
 
-  return Object.entries(nationalityCounts).map(([name, { count, drivers }]) => ({
-    name,
-    count,
-    drivers,
-  }));
+    return Object.entries(nationalityCounts).map(([name, { count, drivers }]) => ({
+      name,
+      count,
+      drivers,
+    }));
   }
   return []
 }
@@ -77,7 +77,9 @@ const options = computed(() => {
 
             if (context[0].parsed !== null) {
               const dataIndex = context[0].dataIndex;
-              footer = `${formatData()[dataIndex].drivers.join(', ')}`;
+              const drivers = formatData()[dataIndex].drivers;
+              const driversWithLineBreaks = drivers.map((driver, idx) => ((idx % 4 === 0 && idx !== 0) ? '\n' + driver : driver))
+              footer = driversWithLineBreaks.join(', ');
             }
 
             return footer;

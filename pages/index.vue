@@ -37,69 +37,69 @@ function changeCurrentSeason(newSeason) {
 }
 
 const jsonRoutes = {
-    standings: 'RaceTable.Races',
-    circuitName: 'Circuit.circuitName',
-    results: 'Results',
+  standings: 'RaceTable.Races',
+  circuitName: 'Circuit.circuitName',
+  results: 'Results',
 }
 
 watch(() => activeSeason.value, async () => {
-    resolvedQueries.value += 1
-    await fetchData()
-    formatData()
-    resolvedQueries.value += 1
+  resolvedQueries.value += 1
+  await fetchData()
+  formatData()
+  resolvedQueries.value += 1
 })
 
 onBeforeMount(async () => {
-    await fetchData()
-    formatData()
-    resolvedQueries.value += 1
-}) 
+  await fetchData()
+  formatData()
+  resolvedQueries.value += 1
+})
 
 async function fetchData() {
-    try {
-        const response = await fetch(`https://ergast.com/api/f1/${activeSeason.value}/results.json?limit=1000`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const rawData = await response.json();
-        data.value = rawData.MRData
-    } catch (error) {
-        console.error('Error:', error);
-        return { winsData: [] };
+  try {
+    const response = await fetch(`https://ergast.com/api/f1/${activeSeason.value}/results.json?limit=1000`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
+    const rawData = await response.json();
+    data.value = rawData.MRData
+  } catch (error) {
+    console.error('Error:', error);
+    return { winsData: [] };
+  }
 }
 
 function formatData() {
   const drivers = {};
-    const races = [];
-    const dates = []
+  const races = [];
+  const dates = []
 
-    _.get(data.value, jsonRoutes.standings).forEach((race) => {
-      races.push(_.get(race, jsonRoutes.circuitName)); 
-      dates.push({ date: race.date, race: _.get(race, jsonRoutes.circuitName) }); 
-      _.get(race, jsonRoutes.results).forEach((result) => {
-        const driverName = `${result.Driver.givenName} ${result.Driver.familyName}`;
-        const points = parseFloat(result.points); 
+  _.get(data.value, jsonRoutes.standings).forEach((race) => {
+    races.push(_.get(race, jsonRoutes.circuitName));
+    dates.push({ date: race.date, race: _.get(race, jsonRoutes.circuitName) });
+    _.get(race, jsonRoutes.results).forEach((result) => {
+      const driverName = `${result.Driver.givenName} ${result.Driver.familyName}`;
+      const points = parseFloat(result.points);
 
-        if (!drivers[driverName]) {
-          drivers[driverName] = {
-            name: driverName,
-            info: result.Driver,
-            wins: 0,
-            total: 0,
-            data: [],
-          }
+      if (!drivers[driverName]) {
+        drivers[driverName] = {
+          name: driverName,
+          info: result.Driver,
+          wins: 0,
+          total: 0,
+          data: [],
         }
+      }
 
-        drivers[driverName].wins += result.position == 1 ? 1 : 0,
+      drivers[driverName].wins += result.position == 1 ? 1 : 0,
         drivers[driverName].total += points;
-        drivers[driverName].data.push({ total: drivers[driverName].total, last: points });
-      });
-
+      drivers[driverName].data.push({ total: drivers[driverName].total, last: points });
     });
 
-    const driverList = Object.values(drivers);
-    data.value = { drivers: driverList, races, dates: dates }
+  });
+
+  const driverList = Object.values(drivers);
+  data.value = { drivers: driverList, races, dates: dates }
 }
 
 </script>
