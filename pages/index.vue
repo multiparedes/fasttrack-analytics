@@ -91,8 +91,8 @@ function formatData() {
         }
       }
 
-      drivers[driverName].wins += result.position == 1 ? 1 : 0,
-        drivers[driverName].total += points;
+      drivers[driverName].wins += result.position == 1 ? 1 : 0
+      drivers[driverName].total += points;
       drivers[driverName].data.push({ total: drivers[driverName].total, last: points });
     });
 

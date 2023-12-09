@@ -1,19 +1,16 @@
 <template>
     <div>
         <label for="seasons" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-100">Select season</label>
-        <select v-if="seasonsList" id="seasons" v-model="selectedSeason"
-            class="bg-gray-50 dark:bg-slate-600 border border-gray-300 dark:border-slate-800 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2">
-            <option selected value="current">Current</option>
-            <option v-for="season in seasonsList" :key="season" :value="season">{{ season }}</option>
-        </select>
+        <VueMultiselect id="seasons" v-model="selectedSeason" :options="seasonsList" />
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import VueMultiselect from 'vue-multiselect'
 
-const selectedSeason = ref('current')
-const seasonsList = ref(null)
+const selectedSeason = ref(null)
+const seasonsList = ref([])
 
 const emit = defineEmits(['season-changed', 'seasons-loaded'])
 
@@ -25,11 +22,10 @@ const fetchData = async () => {
     const response = await fetch('https://ergast.com/api/f1/seasons.json?limit=1000');
     const data = await response.json();
     const seasons = data.MRData.SeasonTable.Seasons.map((season) => season.season)
-    seasons.pop();
-
     emit('seasons-loaded')
-
-    return seasons.sort((a, b) => b - a)
+    seasons.sort((a, b) => b - a)
+    selectedSeason.value = seasons[0]
+    return seasons
 }
 
 watch(selectedSeason, (newSeason) => {
