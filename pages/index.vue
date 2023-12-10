@@ -1,7 +1,11 @@
 <template>
   <PageLoader :totalQueries="2" :fetchedQueries="resolvedQueries" />
   <section class="grid gap-4 py-4 grid-cols-1 md:grid-cols-2 mx-4 w-full max-w-screen-xl">
-    <Card title="Welcome to FastTracks Analytics 👋" class="col-span-2"> </Card>
+    <Card title="Welcome to FastTracks Analytics 👋" class="col-span-2">
+      <div>
+        <Button color="primary" @click="feedbackModal.open()">Get in touch</Button>
+      </div>
+    </Card>
 
     <Card class="col-span-2">
       <SeasonSelector @season-changed="changeCurrentSeason" @seasons-loaded="resolvedQueries += 1" />
@@ -18,6 +22,10 @@
     <Card class="col-span-2" title="Driver's evolution 📈">
       <DriversEvolution :season="activeSeason" :data="data" />
     </Card>
+
+    <Modal ref="feedbackModal" title="Contact with me">
+
+    </Modal>
   </section>
 </template>
 
@@ -25,11 +33,14 @@
 import DriversNationality from "~/components/charts/Nationality.vue";
 import DriversWins from "~/components/charts/Wins.vue";
 import DriversEvolution from "~/components/charts/Evolution.vue";
+import Modal from "~/components/Modal.vue";
+import Button from "~/components/Button.vue";
 import _ from 'lodash'
 
 const activeSeason = ref("current");
 const data = ref({})
 const resolvedQueries = ref(0)
+const feedbackModal = ref(null)
 
 function changeCurrentSeason(newSeason) {
   activeSeason.value = newSeason;

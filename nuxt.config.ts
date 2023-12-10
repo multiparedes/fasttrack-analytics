@@ -2,9 +2,13 @@
 export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: true },
-  components: ['@/components/'],  
-  css: ['@/main.css'],
-  plugins: ['@/plugins/fontawesome.js'],
+  components: ["@/components/"],
+  css: ["@/main.css"],
+  plugins: ["@/plugins/fontawesome.js"],
+  modules: ["@formkit/nuxt"],
+  formkit: {
+    autoImport: true,
+  },
   postcss: {
     plugins: {
       tailwindcss: {},
@@ -12,11 +16,17 @@ export default defineNuxtConfig({
     },
   },
   app: {
-    baseURL: '/fasttrack-analytics/',
-    buildAssetsDir: 'assets',
+    baseURL: "/fasttrack-analytics/",
+    buildAssetsDir: "assets",
     head: {
-      link:  [{ rel: 'shortcut icon', type: 'image/x-icon', href: '@/assets/favicon.svg' }],
-      title: 'A Formula 1 interactive dashboard'
-    }
+      link: [
+        {
+          rel: "shortcut icon",
+          type: "image/x-icon",
+          href: "@/assets/favicon.svg",
+        },
+      ],
+      title: "A Formula 1 interactive dashboard",
+    },
   },
-})
+});

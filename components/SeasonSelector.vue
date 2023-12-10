@@ -29,7 +29,9 @@ const fetchData = async () => {
 }
 
 watch(selectedSeason, (newSeason) => {
-    emit('season-changed', newSeason)
+    if (newSeason) {
+        emit('season-changed', newSeason)
+    }
 })
 
 </script>

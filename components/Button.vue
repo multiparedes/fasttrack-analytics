@@ -14,7 +14,7 @@ const props = defineProps({
         type: String,
         required: true,
         default: 'primary',
-        validator: (color: string) => ['primary', 'secondary', 'transparent'].includes(color),
+        validator: (color: string) => ['primary', 'secondary', 'transparent', 'error'].includes(color),
     },
     variant: {
         type: String,
@@ -59,6 +59,14 @@ function navigate() {
 
 .button-transparent-solid {
     @apply p-0 text-slate-900
+}
+
+.button-error-solid {
+    @apply border-2 border-red-600 bg-red-600 hover:bg-red-400
+}
+
+.button-error-bordered {
+    @apply border-2 border-red-600 text-red-600 hover:bg-red-400 hover:text-white
 }
 </style>
 
