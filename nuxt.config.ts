@@ -23,7 +23,7 @@ export default defineNuxtConfig({
         {
           rel: "shortcut icon",
           type: "image/x-icon",
-          href: "@/assets/favicon.svg",
+          href: "@/assets/formula.svg",
         },
       ],
       title: "A Formula 1 interactive dashboard",

@@ -1,14 +1,14 @@
 <template>
-  <PageLoader :totalQueries="2" :fetchedQueries="resolvedQueries" />
+  <PageLoader v-model="resolvedQueries" />
   <section class="grid gap-4 py-4 grid-cols-1 md:grid-cols-2 mx-4 w-full max-w-screen-xl">
     <Card title="Welcome to FastTracks Analytics 👋" class="col-span-2">
       <div>
-        <Button color="primary" @click="feedbackModal.open()">Get in touch</Button>
+        <Button color="primary" link="/contact">Get in touch</Button>
       </div>
     </Card>
 
     <Card class="col-span-2">
-      <SeasonSelector @season-changed="changeCurrentSeason" @seasons-loaded="resolvedQueries += 1" />
+      <SeasonSelector @season-changed="changeCurrentSeason" />
     </Card>
 
     <Card title="Nacionality of all drivers 🌍" class="col-span-2 md:col-span-1">
@@ -22,10 +22,6 @@
     <Card class="col-span-2" title="Driver's evolution 📈">
       <DriversEvolution :season="activeSeason" :data="data" />
     </Card>
-
-    <Modal ref="feedbackModal" title="Contact with me">
-
-    </Modal>
   </section>
 </template>
 
@@ -33,18 +29,19 @@
 import DriversNationality from "~/components/charts/Nationality.vue";
 import DriversWins from "~/components/charts/Wins.vue";
 import DriversEvolution from "~/components/charts/Evolution.vue";
-import Modal from "~/components/Modal.vue";
 import Button from "~/components/Button.vue";
 import _ from 'lodash'
 
 const activeSeason = ref("current");
 const data = ref({})
-const resolvedQueries = ref(0)
-const feedbackModal = ref(null)
+const resolvedQueries = ref(false)
 
-function changeCurrentSeason(newSeason) {
+async function changeCurrentSeason(newSeason) {
+  resolvedQueries.value = false
   activeSeason.value = newSeason;
-  resolvedQueries.value = 0
+  await fetchData()
+  formatData()
+  resolvedQueries.value = true
 }
 
 const jsonRoutes = {
@@ -53,17 +50,10 @@ const jsonRoutes = {
   results: 'Results',
 }
 
-watch(() => activeSeason.value, async () => {
-  resolvedQueries.value += 1
-  await fetchData()
-  formatData()
-  resolvedQueries.value += 1
-})
-
 onBeforeMount(async () => {
   await fetchData()
   formatData()
-  resolvedQueries.value += 1
+  resolvedQueries.value = true
 })
 
 async function fetchData() {

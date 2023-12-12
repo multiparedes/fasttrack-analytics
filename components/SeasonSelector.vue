@@ -14,7 +14,7 @@ const seasonsList = ref([])
 
 const emit = defineEmits(['season-changed', 'seasons-loaded'])
 
-onMounted(async () => {
+onBeforeMount(async () => {
     seasonsList.value = await fetchData()
 })
 
@@ -22,14 +22,13 @@ const fetchData = async () => {
     const response = await fetch('https://ergast.com/api/f1/seasons.json?limit=1000');
     const data = await response.json();
     const seasons = data.MRData.SeasonTable.Seasons.map((season) => season.season)
-    emit('seasons-loaded')
     seasons.sort((a, b) => b - a)
     selectedSeason.value = seasons[0]
     return seasons
 }
 
 watch(selectedSeason, (newSeason) => {
-    if (newSeason) {
+    if (seasonsList.value.length > 0) {
         emit('season-changed', newSeason)
     }
 })
