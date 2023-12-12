@@ -78,7 +78,7 @@ const options = computed(() => {
             if (context[0].parsed !== null) {
               const dataIndex = context[0].dataIndex;
               const drivers = formatData()[dataIndex].drivers;
-              const driversWithLineBreaks = drivers.map((driver, idx) => ((idx % 4 === 0 && idx !== 0) ? '\n' + driver : driver))
+              const driversWithLineBreaks = drivers.map((driver, idx) => ((idx % 3 === 0 && idx !== 0) ? '\n' + driver : driver))
               footer = driversWithLineBreaks.join(', ');
             }
 
