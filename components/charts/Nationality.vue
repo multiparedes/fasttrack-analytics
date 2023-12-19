@@ -3,17 +3,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Doughnut } from 'vue-chartjs';
-import { generateDynamicColors } from '#imports';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "vue-chartjs";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const hasLegend = ref(true)
+const hasLegend = ref(true);
 
 const props = defineProps({
-  data: { type: Object, required: true }
+  data: { type: Object, required: true },
 });
 
 function formatData() {
@@ -29,23 +27,24 @@ function formatData() {
       }
 
       counts[nationality].count++;
-
       counts[nationality].drivers.push(driver.name);
 
       return counts;
     }, {});
 
-    return Object.entries(nationalityCounts).map(([name, { count, drivers }]) => ({
-      name,
-      count,
-      drivers,
-    }));
+    return Object.entries(nationalityCounts).map(
+      ([name, { count, drivers }]) => ({
+        name,
+        count,
+        drivers,
+      }),
+    );
   }
-  return []
+  return [];
 }
 
 const chartData = computed(() => {
-  const data = formatData()
+  const data = formatData();
   let colors = [];
   if (data) {
     colors = generateDynamicColors(data.length);
@@ -54,7 +53,7 @@ const chartData = computed(() => {
     labels: data ? data.map((driver) => driver.name) : [],
     datasets: [
       {
-        label: 'Total count',
+        label: "Total count",
         data: data ? data.map((driver) => driver.count) : [],
         backgroundColor: colors,
       },
@@ -68,26 +67,29 @@ const options = computed(() => {
     plugins: {
       legend: {
         display: hasLegend.value,
-        position: 'bottom',
+        position: "bottom",
       },
       tooltip: {
         callbacks: {
           footer: function (context) {
-            let footer = ""
+            let footer = "";
 
             if (context[0].parsed !== null) {
               const dataIndex = context[0].dataIndex;
               const drivers = formatData()[dataIndex].drivers;
-              const driversWithLineBreaks = drivers.map((driver, idx) => ((idx % 3 === 0 && idx !== 0) ? '\n' + driver : driver))
-              footer = driversWithLineBreaks.join(', ');
+              const driversWithLineBreaks = drivers.map((driver, idx) =>
+                idx % 3 === 0 && idx !== 0 ? "\n" + driver : driver,
+              );
+              footer = driversWithLineBreaks.join(", ");
             }
 
             return footer;
           },
           labelColor: function (context) {
             return {
-              borderColor: 'rgba(0, 0, 0, 0)',
-              backgroundColor: context.dataset.backgroundColor[context.dataIndex],
+              borderColor: "rgba(0, 0, 0, 0)",
+              backgroundColor:
+                context.dataset.backgroundColor[context.dataIndex],
               borderRadius: 6,
             };
           },
@@ -96,12 +98,12 @@ const options = computed(() => {
     },
     onResize: (_, newView) => {
       if (newView.width < 350) {
-        hasLegend.value = false
+        hasLegend.value = false;
         return false;
       }
-      hasLegend.value = true
+      hasLegend.value = true;
       return true;
     },
-  }
+  };
 });
 </script>

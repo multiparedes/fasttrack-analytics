@@ -3,19 +3,32 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
-import { Line } from 'vue-chartjs'
-import { generateDynamicColors } from '#imports';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "vue-chartjs";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
-const rawData = ref(null);
-const hasLegend = ref(true)
+const hasLegend = ref(true);
 
 const props = defineProps({
-  season: { type: String, required: true, default: 'current' },
-  data: { type: Object, required: true }
+  data: { type: Object, required: true },
 });
 
 const chartData = computed(() => {
@@ -39,7 +52,7 @@ const chartData = computed(() => {
       backgroundColor: colors[index],
       borderColor: colors[index],
       fill: false,
-      pointStyle: 'hidden',
+      pointStyle: "hidden",
     };
   });
   const dates = props.data.dates || [];
@@ -57,31 +70,38 @@ const options = computed(() => {
     interaction: { intersect: false },
     plugins: {
       legend: {
-        position: 'bottom',
+        position: "bottom",
         display: hasLegend.value,
       },
       tooltip: {
         callbacks: {
           title: function (context) {
-            return `${props.data.races[context[0].dataIndex]}`
+            return `${props.data.races[context[0].dataIndex]}`;
           },
           label: function (context) {
-            return [props.data.drivers[context.datasetIndex].name, `Acumulated points: ${context.raw}`, `This race points: ${props.data.drivers[context.datasetIndex].data[context.dataIndex].last}`]
+            return [
+              props.data.drivers[context.datasetIndex].name,
+              `Acumulated points: ${context.raw}`,
+              `This race points: ${
+                props.data.drivers[context.datasetIndex].data[context.dataIndex]
+                  .last
+              }`,
+            ];
           },
           footer: function (context) {
-            return `Date: ${context[0].label}`
-          }
-        }
+            return `Date: ${context[0].label}`;
+          },
+        },
       },
     },
     onResize: (_, newView) => {
       if (newView.width < 700) {
-        hasLegend.value = false
+        hasLegend.value = false;
         return false;
       }
-      hasLegend.value = true
+      hasLegend.value = true;
       return true;
     },
-  }
+  };
 });
 </script>

@@ -2,25 +2,30 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
+  "husky": {
+    "hooks": {
+      "pre-commit": "prettier --write . && git add -A ."
+    }
+  },
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "deploy": "nuxt generate && gh-pages --dotfiles -d .output/public"
+    "deploy": "nuxt generate && gh-pages --dotfiles -d .output/public",
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.1",
     "@nuxt/devtools": "latest",
     "@nuxtjs/tailwindcss": "^6.10.1",
     "autoprefixer": "^10.4.16",
-    "eslint": "^8.51.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier-vue": "^5.0.0",
-    "eslint-plugin-vue": "^9.17.0",
+    "husky": "^8.0.3",
     "nuxt": "^3.7.4",
-    "postcss": "^8.4.31"
+    "postcss": "^8.4.31",
+    "prettier": "^3.1.1"
   },
   "dependencies": {
     "@formkit/nuxt": "^1.4.0",
@@ -30,8 +35,6 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/vue-fontawesome": "^3.0.3",
-    "chart.js": "^4.4.0",
-    "chartjs-plugin-autocolors": "^0.2.2",
     "gh-pages": "^6.0.0",
     "lodash": "^4.17.21",
     "vue-chartjs": "^5.2.0",
