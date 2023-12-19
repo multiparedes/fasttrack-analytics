@@ -2,11 +2,6 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
-  "husky": {
-    "hooks": {
-      "pre-commit": "prettier --write . && git add -A ."
-    }
-  },
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -15,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "deploy": "nuxt generate && gh-pages --dotfiles -d .output/public",
     "lint": "prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.1",
