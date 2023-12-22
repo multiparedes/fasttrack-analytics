@@ -29,6 +29,7 @@ const hasLegend = ref(true);
 
 const props = defineProps({
   data: { type: Object, required: true },
+  teamsMode: { type: Boolean, required: true }
 });
 
 const chartData = computed(() => {
@@ -44,7 +45,67 @@ const chartData = computed(() => {
 
   const colors = generateDynamicColors(drivers.length);
 
-  const datasets = drivers.map((driver, index) => {
+  const datasets = props.teamsMode
+    ? calculateConstructorPoints(drivers, colors)
+    : calculateDriverDatasets(drivers, colors);
+
+  const dates = props.data.dates || [];
+
+  return {
+    labels: dates.map((item) => item.date),
+    datasets: datasets,
+  };
+});
+
+function calculateConstructorPoints(drivers, colors) {
+  const constructorPoints = {};
+
+  drivers.forEach((driver, index) => {
+    const teamName = driver.constructor;
+    constructorPoints[teamName] = {
+      label: teamName,
+      data: [],
+      backgroundColor: colors[index],
+      borderColor: colors[index],
+      fill: false,
+      pointStyle: "hidden",
+    };
+  });
+
+  drivers.forEach((driver) => {
+    const teamName = driver.constructor;
+
+    driver.data.forEach((race, raceIndex) => {
+      const raceTotal = race.total || 0; // Handle NaN or undefined values by defaulting to 0
+
+      // Ensure the data array is initialized for each race
+      if (!constructorPoints[teamName].data[raceIndex]) {
+        constructorPoints[teamName].data[raceIndex] = 0;
+      }
+
+      // Update the value without filling with 0 initially
+      constructorPoints[teamName].data[raceIndex] = Number(
+        (Math.max(
+          constructorPoints[teamName].data[raceIndex] || 0,
+          raceTotal
+        )).toFixed(2) // Adjust the number of decimal places as needed
+      );
+    });
+  });
+
+  // Sort the constructorPoints based on the total points in descending order
+  const sortedConstructorPoints = Object.values(constructorPoints).sort((a, b) => {
+    const totalA = a.data.reduce((acc, val) => acc + val, 0);
+    const totalB = b.data.reduce((acc, val) => acc + val, 0);
+    return totalB - totalA;
+  });
+
+  return sortedConstructorPoints;
+}
+
+
+function calculateDriverDatasets(drivers, colors) {
+  return drivers.map((driver, index) => {
     const scores = driver.data || [];
     return {
       label: driver.name,
@@ -55,13 +116,7 @@ const chartData = computed(() => {
       pointStyle: "hidden",
     };
   });
-  const dates = props.data.dates || [];
-
-  return {
-    labels: dates.map((item) => item.date),
-    datasets: datasets,
-  };
-});
+}
 
 const options = computed(() => {
   return {
@@ -79,14 +134,13 @@ const options = computed(() => {
             return `${props.data.races[context[0].dataIndex]}`;
           },
           label: function (context) {
+            const driver = props.data.drivers[context.datasetIndex];
+            const race = driver.data[context.dataIndex];
             return [
-              props.data.drivers[context.datasetIndex].name,
+              context.dataset.label,
               `Acumulated points: ${context.raw}`,
-              `This race points: ${
-                props.data.drivers[context.datasetIndex].data[context.dataIndex]
-                  .last
-              }`,
-            ];
+              props.teamsMode ? null : `This race points: ${race ? race.last : 'N/A'}`,
+            ].filter(line => line !== null);
           },
           footer: function (context) {
             return `Date: ${context[0].label}`;
@@ -104,4 +158,5 @@ const options = computed(() => {
     },
   };
 });
+
 </script>

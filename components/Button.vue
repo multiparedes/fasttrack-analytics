@@ -1,47 +1,41 @@
 <template>
-  <button
-    class="inline-flex items-center gap-2 px-4 py-2 transition-color duration-200 linear text-white rounded-full"
-    :class="`button-${color}-${variant}`"
-    target="_blank"
-    @click="navigate"
-  >
-    <font-awesome-icon
-      v-if="icon"
-      class="aspect-square w-6"
-      :class="iconStart ? 'flex-row-reverse' : ''"
-      :icon="[icon?.prefix, icon?.iconName]"
-    />
+  <button class="inline-flex items-center gap-2 px-4 py-2 transition-color duration-200 linear text-white rounded-full"
+    :class="`button-${color}-${variant} ${!iconStart ? 'flex-row-reverse' : ''}`" target="_blank" @click="navigate">
+    <font-awesome-icon v-if="icon" class="aspect-square w-6" :icon="[icon?.prefix, icon?.iconName]" />
     <slot></slot>
   </button>
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
+
 const route = useRouter();
+
 const props = defineProps({
   color: {
     type: String,
-    required: true,
-    default: "primary",
+    required: false,
+    default: 'primary',
     validator: (color: string) =>
-      ["primary", "secondary", "transparent", "error"].includes(color),
+      ['primary', 'secondary', 'transparent', 'error'].includes(color),
   },
   variant: {
     type: String,
     required: false,
-    default: "solid",
-    validator: (variant: string) => ["solid", "bordered"].includes(variant),
+    default: 'solid',
+    validator: (variant: string) => ['solid', 'bordered'].includes(variant),
   },
-  size: { type: String, required: false, default: "md" },
+  size: { type: String, required: false, default: 'md' },
   icon: { type: Object, required: false, default: null },
   disabled: { type: Boolean, required: false, default: false },
   iconStart: { type: Boolean, required: false, default: false },
-  link: { type: String, required: false, default: "" },
+  link: { type: String, required: false, default: '' },
   isExternalLink: { type: Boolean, required: false, default: false },
 });
 
 function navigate() {
   if (props.isExternalLink) {
-    window.open(props.link, "_blank");
+    window.open(props.link, '_blank');
   } else {
     route.push(props.link);
   }

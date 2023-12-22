@@ -1,8 +1,6 @@
 <template>
   <PageLoader v-model="resolvedQueries" />
-  <section
-    class="grid gap-4 py-4 grid-cols-1 md:grid-cols-2 mx-4 w-full max-w-screen-xl"
-  >
+  <section class="grid gap-4 py-4 grid-cols-1 md:grid-cols-2 mx-4 w-full max-w-screen-xl">
     <Card title="Welcome to FastTracks Analytics 👋" class="col-span-2">
       <div>
         <Button color="primary" link="/contact">Get in touch</Button>
@@ -13,22 +11,19 @@
       <SeasonSelector @season-changed="changeCurrentSeason" />
     </Card>
 
-    <Card
-      title="Nacionality of all drivers 🌍"
-      class="col-span-2 md:col-span-1"
-    >
-      <DriversNationality :season="activeSeason" :data="endpointData" />
+    <Card title="Nacionality of all drivers 🌍" class="col-span-2 md:col-span-1">
+      <DriversNationality :data="endpointData" />
     </Card>
 
-    <Card
-      title="Number of races won by drivers 🏆"
-      class="col-span-2 md:col-span-1"
-    >
-      <DriversWins :season="activeSeason" :data="endpointData" />
+    <Card title="Number of races won by drivers 🏆" class="col-span-2 md:col-span-1">
+      <DriversWins :data="endpointData" />
     </Card>
 
-    <Card class="col-span-2" title="Driver's evolution 📈">
-      <DriversEvolution :season="activeSeason" :data="endpointData" />
+    <Card class="col-span-2 relative" title="Races evolution 📈">
+      <Button class="fit absolute right-4 top-4" color="primary" variant="bordered"
+        :icon="{ prefix: 'fas', iconName: teamsMode ? 'users' : 'user' }" @click=" teamsMode = !teamsMode"> {{ teamsMode ?
+          'Teams' : 'Driver' }} </Button>
+      <DriversEvolution :data="endpointData" :teamsMode="teamsMode" />
     </Card>
   </section>
 </template>
@@ -41,6 +36,7 @@ import DriversEvolution from "~/components/charts/Evolution.vue";
 const activeSeason = ref("current");
 const resolvedQueries = ref(false);
 const endpointData = ref({});
+const teamsMode = ref(false)
 
 async function changeCurrentSeason(newSeason) {
   resolvedQueries.value = false;
@@ -68,3 +64,9 @@ async function fetchData() {
   endpointData.value = data.value.MRData;
 }
 </script>
+
+<style>
+.fit {
+  width: fit-content;
+}
+</style>

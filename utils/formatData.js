@@ -24,6 +24,7 @@ function formatEndpointData(endpointData) {
         drivers[driverName] = {
           name: driverName,
           info: result.Driver,
+          constructor: result.Constructor.name,
           wins: 0,
           total: 0,
           data: [],
@@ -43,4 +44,40 @@ function formatEndpointData(endpointData) {
   return { drivers: driverList, races, dates };
 }
 
-export { formatEndpointData };
+function formatEndpointTeams(endpointData) {
+  const teams = {};
+  const races = [];
+  const dates = [];
+
+  _.get(endpointData, jsonRoutes.standings).forEach((race) => {
+    const raceName = _.get(race, jsonRoutes.circuitName);
+    races.push(raceName);
+    dates.push({ date: race.date, race: raceName });
+
+    _.get(race, jsonRoutes.results).forEach((result) => {
+      const teamName = result[jsonRoutes.constructor].name;
+      const points = parseFloat(result.points);
+
+      if (!teams[teamName]) {
+        teams[teamName] = {
+          name: teamName,
+          wins: 0,
+          total: 0,
+          data: [],
+        };
+      }
+
+      teams[teamName].wins += result.position === "1" ? 1 : 0;
+      teams[teamName].total += points;
+      teams[teamName].data.push({
+        total: teams[teamName].total,
+        last: points,
+      });
+    });
+  });
+
+  const teamList = Object.values(teams);
+  return { teams: teamList, races, dates };
+}
+
+export { formatEndpointData, formatEndpointTeams };
